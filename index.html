@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Administrativo</title>
+    <script src="https://www.gstatic.com/firebasejs/9.x.x/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.x.x/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.x.x/firebase-auth-compat.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background-color: #f8f9fa;
+        }
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        .login-container {
+            max-width: 400px;
+            margin: 100px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .login-container input {
+            width: 100%;
+            padding: 8px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .login-container button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .login-container button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div id="loginForm" class="login-container">
+        <h2>Iniciar Sesión</h2>
+        <input type="email" id="email" placeholder="Email">
+        <input type="password" id="password" placeholder="Contraseña">
+        <button onclick="login()">Entrar</button>
+    </div>
+
+    <div id="dashboard" class="container" style="display: none;">
+        <h1>Panel de Control - Registro de Visitas</h1>
+        <table id="visitsTable">
+            <thead>
+                <tr>
+                    <th>Fecha y Hora</th>
+                    <th>IP</th>
+                    <th>País</th>
+                    <th>Ciudad</th>
+                    <th>Coordenadas</th>
+                    <th>Navegador</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAgdHco56N5t1YZdyt4i1yeO6fOpcO8giI",
+            authDomain: "paneladm-88aa4.firebaseapp.com",
+            projectId: "paneladm-88aa4",
+            storageBucket: "paneladm-88aa4.firebasestorage.app",
+            messagingSenderId: "979848933656",
+            appId: "1:979848933656:web:d8220a1371efbb13932e6d",
+            measurementId: "G-N13T2X5MGV"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+
+        async function login() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                await auth.signInWithEmailAndPassword(email, password);
+                document.getElementById('loginForm').style.display = 'none';
+                document.getElementById('dashboard').style.display = 'block';
+                loadVisits();
+            } catch (error) {
+                alert('Error al iniciar sesión: ' + error.message);
+            }
+        }
+
+        function loadVisits() {
+            const tbody = document.querySelector('#visitsTable tbody');
+            
+            db.collection('visits')
+                .orderBy('timestamp', 'desc')
+                .onSnapshot((snapshot) => {
+                    tbody.innerHTML = '';
+                    snapshot.forEach((doc) => {
+                        const data = doc.data();
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${data.timestamp ? new Date(data.timestamp.toDate()).toLocaleString() : 'N/A'}</td>
+                            <td>${data.ip}</td>
+                            <td>${data.country}</td>
+                            <td>${data.city}</td>
+                            <td>${data.latitude}, ${data.longitude}</td>
+                            <td>${data.userAgent}</td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+                });
+        }
+
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                document.getElementById('loginForm').style.display = 'none';
+                document.getElementById('dashboard').style.display = 'block';
+                loadVisits();
+            } else {
+                document.getElementById('loginForm').style.display = 'block';
+                document.getElementById('dashboard').style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
