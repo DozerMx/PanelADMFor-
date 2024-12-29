@@ -4,9 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel Administrativo</title>
-    <script src="https://www.gstatic.com/firebasejs/9.x.x/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.x.x/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.x.x/firebase-auth-compat.js"></script>
+    <!-- Primero cargamos todas las dependencias de Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -65,6 +66,11 @@
         .login-container button:hover {
             background-color: #0056b3;
         }
+        #errorMessage {
+            color: red;
+            margin-top: 10px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -73,6 +79,7 @@
         <input type="email" id="email" placeholder="Email">
         <input type="password" id="password" placeholder="Contraseña">
         <button onclick="login()">Entrar</button>
+        <div id="errorMessage"></div>
     </div>
 
     <div id="dashboard" class="container" style="display: none;">
@@ -93,6 +100,7 @@
     </div>
 
     <script>
+        // Inicialización de Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyAgdHco56N5t1YZdyt4i1yeO6fOpcO8giI",
             authDomain: "paneladm-88aa4.firebaseapp.com",
@@ -103,21 +111,26 @@
             measurementId: "G-N13T2X5MGV"
         };
 
+        // Inicializamos Firebase antes de cualquier otra operación
         firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
+
+        // Luego inicializamos los servicios
         const auth = firebase.auth();
+        const db = firebase.firestore();
 
         async function login() {
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
+            const errorMessage = document.getElementById('errorMessage');
 
             try {
                 await auth.signInWithEmailAndPassword(email, password);
+                errorMessage.textContent = '';
                 document.getElementById('loginForm').style.display = 'none';
                 document.getElementById('dashboard').style.display = 'block';
                 loadVisits();
             } catch (error) {
-                alert('Error al iniciar sesión: ' + error.message);
+                errorMessage.textContent = 'Error al iniciar sesión: ' + error.message;
             }
         }
 
@@ -133,17 +146,18 @@
                         const row = document.createElement('tr');
                         row.innerHTML = `
                             <td>${data.timestamp ? new Date(data.timestamp.toDate()).toLocaleString() : 'N/A'}</td>
-                            <td>${data.ip}</td>
-                            <td>${data.country}</td>
-                            <td>${data.city}</td>
-                            <td>${data.latitude}, ${data.longitude}</td>
-                            <td>${data.userAgent}</td>
+                            <td>${data.ip || 'N/A'}</td>
+                            <td>${data.country || 'N/A'}</td>
+                            <td>${data.city || 'N/A'}</td>
+                            <td>${data.latitude ? `${data.latitude}, ${data.longitude}` : 'N/A'}</td>
+                            <td>${data.userAgent || 'N/A'}</td>
                         `;
                         tbody.appendChild(row);
                     });
                 });
         }
 
+        // Verificar estado de autenticación
         auth.onAuthStateChanged((user) => {
             if (user) {
                 document.getElementById('loginForm').style.display = 'none';
