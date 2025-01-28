@@ -8,243 +8,273 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
     <style>
-    body {
-        font-family: Arial, sans-serif;
+    :root {
+        --primary-color: #2a2a72;
+        --secondary-color: #009ffd;
+        --accent-color: #00d4ff;
+        --background-color: #1a1a2e;
+        --card-color: #16213e;
+        --text-color: #e0e0e0;
+    }
+
+    * {
         margin: 0;
-        padding: 20px;
-        background-color: #f5f5f5;
-    }
-    .container {
-        max-width: 1200px;
-        margin: 0 auto;
-        background-color: white;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-    .login-container {
-        max-width: 400px;
-        margin: 100px auto;
-        padding: 20px;
-        background-color: white;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-    .login-container input {
-        width: 100%;
-        padding: 12px;
-        margin: 10px 0;
-        border: 1px solid #ddd;
-        border-radius: 4px;
+        padding: 0;
         box-sizing: border-box;
     }
-    .login-container button {
+
+    body {
+        font-family: 'Segoe UI', sans-serif;
+        background: var(--background-color);
+        color: var(--text-color);
+        line-height: 1.6;
+    }
+
+    .container {
+        width: 95%;
+        max-width: 1400px;
+        margin: 2rem auto;
+        padding: 1rem;
+    }
+
+    .login-container {
+        max-width: 400px;
+        margin: 10vh auto;
+        background: var(--card-color);
+        padding: 2rem;
+        border-radius: 1rem;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        backdrop-filter: blur(10px);
+    }
+
+    input {
         width: 100%;
-        padding: 12px;
-        background-color: #007bff;
+        padding: 0.8rem;
+        margin: 0.5rem 0;
+        border: none;
+        border-radius: 0.5rem;
+        background: rgba(255, 255, 255, 0.1);
+        color: var(--text-color);
+        transition: all 0.3s ease;
+    }
+
+    input:focus {
+        outline: none;
+        background: rgba(255, 255, 255, 0.15);
+        box-shadow: 0 0 0 2px var(--accent-color);
+    }
+
+    button {
+        background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
         color: white;
         border: none;
-        border-radius: 4px;
+        padding: 0.8rem 1.5rem;
+        border-radius: 0.5rem;
         cursor: pointer;
-        font-size: 16px;
+        transition: transform 0.2s, box-shadow 0.2s;
     }
-    .login-container button:hover {
-        background-color: #0056b3;
+
+    button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 212, 255, 0.2);
     }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        background: var(--card-color);
+        padding: 1.5rem;
+        border-radius: 1rem;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+        transition: transform 0.3s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .filters-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        background: var(--card-color);
+        padding: 1rem;
+        border-radius: 1rem;
+    }
+
+    .filter-group {
+        flex: 1;
+        min-width: 200px;
+    }
+
+    select {
+        width: 100%;
+        padding: 0.8rem;
+        border: none;
+        border-radius: 0.5rem;
+        background: rgba(255, 255, 255, 0.1);
+        color: var(--text-color);
+    }
+
+    .table-container {
+        overflow-x: auto;
+        background: var(--card-color);
+        border-radius: 1rem;
+        padding: 1rem;
+    }
+
     table {
         width: 100%;
         border-collapse: collapse;
-        margin-top: 20px;
-        font-size: 14px;
+        white-space: nowrap;
     }
+
     th, td {
-        padding: 12px;
-        border: 1px solid #ddd;
+        padding: 1rem;
         text-align: left;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     }
+
     th {
-        background-color: #f8f9fa;
-        font-weight: bold;
+        background: rgba(0, 0, 0, 0.2);
+        position: sticky;
+        top: 0;
     }
-    tr:nth-child(even) {
-        background-color: #f8f9fa;
-    }
+
     tr:hover {
-        background-color: #f2f2f2;
+        background: rgba(255, 255, 255, 0.05);
     }
+
     .status-badge {
-        padding: 4px 8px;
-        border-radius: 12px;
-        font-size: 12px;
-        font-weight: bold;
+        padding: 0.4rem 0.8rem;
+        border-radius: 2rem;
+        font-size: 0.85rem;
+        font-weight: 500;
     }
+
     .status-initial {
-        background-color: #ffd700;
-        color: #000;
+        background: linear-gradient(45deg, #ffd700, #ffa500);
     }
+
     .status-complete {
-        background-color: #28a745;
-        color: white;
+        background: linear-gradient(45deg, #00b09b, #96c93d);
     }
-    .coordinates-loading {
-        display: inline-block;
-        width: 16px;
-        height: 16px;
-        border: 2px solid #f3f3f3;
-        border-top: 2px solid #3498db;
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
-        margin-right: 8px;
-    }
-    @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-    }
+
     .action-buttons {
         display: flex;
-        gap: 8px;
+        gap: 0.5rem;
+        flex-wrap: wrap;
     }
+
     .action-button {
-        padding: 6px 12px;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 12px;
-        color: white;
+        padding: 0.5rem 1rem;
+        font-size: 0.85rem;
     }
-    .map-button {
-        background-color: #28a745;
+
+    .delete-button {
+        background: linear-gradient(45deg, #ff416c, #ff4b2b);
     }
-    .label-button {
-        background-color: #17a2b8;
+
+    @media (max-width: 768px) {
+        .container {
+            width: 100%;
+            padding: 0.5rem;
+        }
+
+        .filters-container {
+            flex-direction: column;
+        }
+
+        .action-buttons {
+            flex-direction: column;
+        }
+
+        .action-button {
+            width: 100%;
+        }
+
+        td, th {
+            padding: 0.75rem 0.5rem;
+            font-size: 0.9rem;
+        }
     }
-    .label-input {
-        width: 200px;
-        padding: 4px 8px;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        margin-right: 8px;
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
     }
-    .vpn-warning {
-        color: #dc3545;
-        font-weight: bold;
-    }
-    .filters {
-        display: flex;
-        gap: 16px;
-        margin-bottom: 20px;
-    }
-    .filter-group {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-    .filter-select {
-        padding: 8px;
-        border-radius: 4px;
-        border: 1px solid #ddd;
-    }
-    .refresh-button {
-        padding: 8px 16px;
-        background-color: #6c757d;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-    }
-    .stats-container {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 16px;
-        margin-bottom: 20px;
-    }
-    .stat-card {
-        background-color: #fff;
-        padding: 16px;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        text-align: center;
-    }
-    .stat-value {
-        font-size: 24px;
-        font-weight: bold;
-        color: #007bff;
-    }
-    .stat-label {
-        font-size: 14px;
-        color: #6c757d;
-    }
-    #errorMessage {
-        color: #dc3545;
-        margin-top: 10px;
-        text-align: center;
+
+    .animate-in {
+        animation: fadeIn 0.5s ease forwards;
     }
     </style>
 </head>
 <body>
-    <div id="loginForm" class="login-container">
+    <div id="loginForm" class="login-container animate-in">
         <h2>Iniciar Sesión</h2>
-        <input type="email" id="email" placeholder="Email">
+        <input type="email" id="email" placeholder="Email" autocomplete="off">
         <input type="password" id="password" placeholder="Contraseña">
         <button onclick="login()">Entrar</button>
         <div id="errorMessage"></div>
     </div>
 
-    <div id="dashboard" class="container" style="display: none;">
-        <h1>Panel de Control - Registro de Visitas</h1>
+    <div id="dashboard" class="container animate-in" style="display: none;">
+        <h1>Panel de Control</h1>
         
-        <div class="stats-container">
+        <div class="stats-grid">
             <div class="stat-card">
-                <div class="stat-value" id="totalVisits">0</div>
-                <div class="stat-label">Total de Visitas</div>
+                <h3>Total Visitas</h3>
+                <div id="totalVisits" class="stat-value">0</div>
             </div>
             <div class="stat-card">
-                <div class="stat-value" id="vpnDetected">0</div>
-                <div class="stat-label">VPN Detectados</div>
+                <h3>VPN Detectados</h3>
+                <div id="vpnDetected" class="stat-value">0</div>
             </div>
             <div class="stat-card">
-                <div class="stat-value" id="completedLocation">0</div>
-                <div class="stat-label">Ubicaciones Completadas</div>
+                <h3>Ubicaciones Completas</h3>
+                <div id="completedLocation" class="stat-value">0</div>
             </div>
         </div>
 
-        <div class="filters">
+        <div class="filters-container">
             <div class="filter-group">
-                <label>País:</label>
-                <select id="countryFilter" class="filter-select">
-                    <option value="">Todos</option>
+                <select id="countryFilter">
+                    <option value="">Todos los países</option>
                 </select>
             </div>
             <div class="filter-group">
-                <label>Estado:</label>
-                <select id="statusFilter" class="filter-select">
-                    <option value="">Todos</option>
+                <select id="statusFilter">
+                    <option value="">Todos los estados</option>
                     <option value="initial">Inicial</option>
                     <option value="complete">Completo</option>
                 </select>
             </div>
-            <button class="refresh-button" onclick="loadVisits()">
-                Actualizar Datos
-            </button>
+            <button onclick="loadVisits()">Actualizar</button>
         </div>
 
-        <table id="visitsTable">
-            <thead>
-                <tr>
-                    <th>Etiqueta</th>
-                    <th>Fecha y Hora</th>
-                    <th>IP</th>
-                    <th>País</th>
-                    <th>Ciudad</th>
-                    <th>Estado</th>
-                    <th>Coordenadas</th>
-                    <th>VPN</th>
-                    <th>Navegador</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
+        <div class="table-container">
+            <table id="visitsTable">
+                <thead>
+                    <tr>
+                        <th>Etiqueta</th>
+                        <th>Fecha</th>
+                        <th>IP</th>
+                        <th>País</th>
+                        <th>Estado</th>
+                        <th>Coordenadas</th>
+                        <th>VPN</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
     </div>
 
     <script>
@@ -265,32 +295,35 @@
     async function login() {
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
-        const errorMessage = document.getElementById('errorMessage');
-
         try {
             await auth.signInWithEmailAndPassword(email, password);
-            errorMessage.textContent = '';
             document.getElementById('loginForm').style.display = 'none';
             document.getElementById('dashboard').style.display = 'block';
             loadVisits();
         } catch (error) {
-            errorMessage.textContent = 'Error al iniciar sesión: ' + error.message;
+            document.getElementById('errorMessage').textContent = 'Error: ' + error.message;
+        }
+    }
+
+    async function deleteVisit(docId) {
+        if (confirm('¿Estás seguro de que deseas eliminar este registro?')) {
+            try {
+                await db.collection('visits').doc(docId).delete();
+            } catch (error) {
+                alert('Error al eliminar: ' + error.message);
+            }
         }
     }
 
     async function updateLabel(docId, currentLabel) {
-        const newLabel = prompt('Ingrese la nueva etiqueta:', currentLabel || '');
+        const newLabel = prompt('Nueva etiqueta:', currentLabel || '');
         if (newLabel !== null) {
-            await db.collection('visits').doc(docId).update({
-                label: newLabel
-            });
+            await db.collection('visits').doc(docId).update({ label: newLabel });
         }
     }
 
     function openInMaps(lat, lng) {
-        if (lat && lng) {
-            window.open(`https://www.google.com/maps?q=${lat},${lng}`, '_blank');
-        }
+        window.open(`https://www.google.com/maps?q=${lat},${lng}`, '_blank');
     }
 
     function updateStats(visits) {
@@ -302,8 +335,7 @@
     function updateFilters(visits) {
         const countryFilter = document.getElementById('countryFilter');
         const countries = [...new Set(visits.map(v => v.country).filter(Boolean))];
-        
-        countryFilter.innerHTML = '<option value="">Todos</option>';
+        countryFilter.innerHTML = '<option value="">Todos los países</option>';
         countries.sort().forEach(country => {
             const option = document.createElement('option');
             option.value = country;
@@ -313,8 +345,7 @@
     }
 
     function formatDate(timestamp) {
-        if (!timestamp) return 'N/A';
-        return new Date(timestamp.seconds * 1000).toLocaleString();
+        return timestamp ? new Date(timestamp.seconds * 1000).toLocaleString() : 'N/A';
     }
 
     function loadVisits() {
@@ -322,63 +353,40 @@
         const countryFilter = document.getElementById('countryFilter').value;
         const statusFilter = document.getElementById('statusFilter').value;
         
-        db.collection('visits')
-            .orderBy('timestamp', 'desc')
-            .onSnapshot((snapshot) => {
-                const visits = [];
-                tbody.innerHTML = '';
-                
-                snapshot.forEach((doc) => {
-                    const data = doc.data();
-                    visits.push(data);
+        db.collection('visits').orderBy('timestamp', 'desc').onSnapshot((snapshot) => {
+            const visits = [];
+            tbody.innerHTML = '';
+            
+            snapshot.forEach((doc) => {
+                const data = doc.data();
+                visits.push(data);
 
-                    if ((countryFilter && data.country !== countryFilter) || 
-                        (statusFilter && data.status !== statusFilter)) {
-                        return;
-                    }
+                if ((countryFilter && data.country !== countryFilter) || 
+                    (statusFilter && data.status !== statusFilter)) {
+                    return;
+                }
 
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${data.label || ''}</td>
-                        <td>${formatDate(data.timestamp)}</td>
-                        <td>${data.initialIp || 'N/A'}</td>
-                        <td>${data.country || 'N/A'}</td>
-                        <td>${data.city || 'N/A'}</td>
-                        <td>
-                            <span class="status-badge status-${data.status}">
-                                ${data.status === 'complete' ? 'Completo' : 'Inicial'}
-                            </span>
-                        </td>
-                        <td>
-                            ${data.status === 'initial' ? 
-                                '<div class="coordinates-loading"></div>Esperando...' :
-                                `${data.preciseLatitude}, ${data.preciseLongitude}`
-                            }
-                        </td>
-                        <td>${data.vpnDetected ? 
-                            '<span class="vpn-warning">Detectado</span>' : 
-                            'No detectado'}
-                        </td>
-                        <td>${data.userAgent || 'N/A'}</td>
-                        <td class="action-buttons">
-                            ${data.preciseLatitude ? 
-                                `<button class="action-button map-button" 
-                                    onclick="openInMaps(${data.preciseLatitude}, ${data.preciseLongitude})">
-                                    Ver en Mapa
-                                </button>` : ''
-                            }
-                            <button class="action-button label-button" 
-                                onclick="updateLabel('${doc.id}', '${data.label || ''}')">
-                                Etiquetar
-                            </button>
-                        </td>
-                    `;
-                    tbody.appendChild(row);
-                });
-
-                updateStats(visits);
-                updateFilters(visits);
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${data.label || ''}</td>
+                    <td>${formatDate(data.timestamp)}</td>
+                    <td>${data.initialIp || 'N/A'}</td>
+                    <td>${data.country || 'N/A'}</td>
+                    <td><span class="status-badge status-${data.status}">${data.status === 'complete' ? 'Completo' : 'Inicial'}</span></td>
+                    <td>${data.status === 'complete' ? `${data.preciseLatitude}, ${data.preciseLongitude}` : 'Esperando...'}</td>
+                    <td>${data.vpnDetected ? 'Detectado' : 'No'}</td>
+                    <td class="action-buttons">
+                        ${data.preciseLatitude ? `<button class="action-button" onclick="openInMaps(${data.preciseLatitude}, ${data.preciseLongitude})">Mapa</button>` : ''}
+                        <button class="action-button" onclick="updateLabel('${doc.id}', '${data.label || ''}')">Etiquetar</button>
+                        <button class="action-button delete-button" onclick="deleteVisit('${doc.id}')">Eliminar</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
             });
+
+            updateStats(visits);
+            updateFilters(visits);
+        });
     }
 
     auth.onAuthStateChanged((user) => {
