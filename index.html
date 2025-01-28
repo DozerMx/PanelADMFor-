@@ -4,73 +4,181 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel Administrativo</title>
-    <!-- Primero cargamos todas las dependencias de Firebase -->
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: #f5f5f5;
-        }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        th, td {
-            padding: 12px;
-            border: 1px solid #ddd;
-            text-align: left;
-        }
-        th {
-            background-color: #f8f9fa;
-        }
-        tr:nth-child(even) {
-            background-color: #f8f9fa;
-        }
-        .login-container {
-            max-width: 400px;
-            margin: 100px auto;
-            padding: 20px;
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .login-container input {
-            width: 100%;
-            padding: 8px;
-            margin: 10px 0;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-        .login-container button {
-            width: 100%;
-            padding: 10px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        .login-container button:hover {
-            background-color: #0056b3;
-        }
-        #errorMessage {
-            color: red;
-            margin-top: 10px;
-            text-align: center;
-        }
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+        background-color: #f5f5f5;
+    }
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        background-color: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .login-container {
+        max-width: 400px;
+        margin: 100px auto;
+        padding: 20px;
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .login-container input {
+        width: 100%;
+        padding: 12px;
+        margin: 10px 0;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+    .login-container button {
+        width: 100%;
+        padding: 12px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+    }
+    .login-container button:hover {
+        background-color: #0056b3;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+        font-size: 14px;
+    }
+    th, td {
+        padding: 12px;
+        border: 1px solid #ddd;
+        text-align: left;
+    }
+    th {
+        background-color: #f8f9fa;
+        font-weight: bold;
+    }
+    tr:nth-child(even) {
+        background-color: #f8f9fa;
+    }
+    tr:hover {
+        background-color: #f2f2f2;
+    }
+    .status-badge {
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: bold;
+    }
+    .status-initial {
+        background-color: #ffd700;
+        color: #000;
+    }
+    .status-complete {
+        background-color: #28a745;
+        color: white;
+    }
+    .coordinates-loading {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        border: 2px solid #f3f3f3;
+        border-top: 2px solid #3498db;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-right: 8px;
+    }
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    .action-buttons {
+        display: flex;
+        gap: 8px;
+    }
+    .action-button {
+        padding: 6px 12px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 12px;
+        color: white;
+    }
+    .map-button {
+        background-color: #28a745;
+    }
+    .label-button {
+        background-color: #17a2b8;
+    }
+    .label-input {
+        width: 200px;
+        padding: 4px 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        margin-right: 8px;
+    }
+    .vpn-warning {
+        color: #dc3545;
+        font-weight: bold;
+    }
+    .filters {
+        display: flex;
+        gap: 16px;
+        margin-bottom: 20px;
+    }
+    .filter-group {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .filter-select {
+        padding: 8px;
+        border-radius: 4px;
+        border: 1px solid #ddd;
+    }
+    .refresh-button {
+        padding: 8px 16px;
+        background-color: #6c757d;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    .stats-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 16px;
+        margin-bottom: 20px;
+    }
+    .stat-card {
+        background-color: #fff;
+        padding: 16px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        text-align: center;
+    }
+    .stat-value {
+        font-size: 24px;
+        font-weight: bold;
+        color: #007bff;
+    }
+    .stat-label {
+        font-size: 14px;
+        color: #6c757d;
+    }
+    #errorMessage {
+        color: #dc3545;
+        margin-top: 10px;
+        text-align: center;
+    }
     </style>
 </head>
 <body>
@@ -84,15 +192,55 @@
 
     <div id="dashboard" class="container" style="display: none;">
         <h1>Panel de Control - Registro de Visitas</h1>
+        
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="stat-value" id="totalVisits">0</div>
+                <div class="stat-label">Total de Visitas</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="vpnDetected">0</div>
+                <div class="stat-label">VPN Detectados</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="completedLocation">0</div>
+                <div class="stat-label">Ubicaciones Completadas</div>
+            </div>
+        </div>
+
+        <div class="filters">
+            <div class="filter-group">
+                <label>País:</label>
+                <select id="countryFilter" class="filter-select">
+                    <option value="">Todos</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Estado:</label>
+                <select id="statusFilter" class="filter-select">
+                    <option value="">Todos</option>
+                    <option value="initial">Inicial</option>
+                    <option value="complete">Completo</option>
+                </select>
+            </div>
+            <button class="refresh-button" onclick="loadVisits()">
+                Actualizar Datos
+            </button>
+        </div>
+
         <table id="visitsTable">
             <thead>
                 <tr>
+                    <th>Etiqueta</th>
                     <th>Fecha y Hora</th>
                     <th>IP</th>
                     <th>País</th>
                     <th>Ciudad</th>
+                    <th>Estado</th>
                     <th>Coordenadas</th>
+                    <th>VPN</th>
                     <th>Navegador</th>
+                    <th>Acciones</th>
                 </tr>
             </thead>
             <tbody></tbody>
@@ -100,74 +248,149 @@
     </div>
 
     <script>
-        // Inicialización de Firebase
-        const firebaseConfig = {
-            apiKey: "AIzaSyAgdHco56N5t1YZdyt4i1yeO6fOpcO8giI",
-            authDomain: "paneladm-88aa4.firebaseapp.com",
-            projectId: "paneladm-88aa4",
-            storageBucket: "paneladm-88aa4.firebasestorage.app",
-            messagingSenderId: "979848933656",
-            appId: "1:979848933656:web:d8220a1371efbb13932e6d",
-            measurementId: "G-N13T2X5MGV"
-        };
+    const firebaseConfig = {
+        apiKey: "AIzaSyAgdHco56N5t1YZdyt4i1yeO6fOpcO8giI",
+        authDomain: "paneladm-88aa4.firebaseapp.com",
+        projectId: "paneladm-88aa4",
+        storageBucket: "paneladm-88aa4.firebasestorage.app",
+        messagingSenderId: "979848933656",
+        appId: "1:979848933656:web:d8220a1371efbb13932e6d",
+        measurementId: "G-N13T2X5MGV"
+    };
 
-        // Inicializamos Firebase antes de cualquier otra operación
-        firebase.initializeApp(firebaseConfig);
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
 
-        // Luego inicializamos los servicios
-        const auth = firebase.auth();
-        const db = firebase.firestore();
+    async function login() {
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const errorMessage = document.getElementById('errorMessage');
 
-        async function login() {
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            const errorMessage = document.getElementById('errorMessage');
-
-            try {
-                await auth.signInWithEmailAndPassword(email, password);
-                errorMessage.textContent = '';
-                document.getElementById('loginForm').style.display = 'none';
-                document.getElementById('dashboard').style.display = 'block';
-                loadVisits();
-            } catch (error) {
-                errorMessage.textContent = 'Error al iniciar sesión: ' + error.message;
-            }
+        try {
+            await auth.signInWithEmailAndPassword(email, password);
+            errorMessage.textContent = '';
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('dashboard').style.display = 'block';
+            loadVisits();
+        } catch (error) {
+            errorMessage.textContent = 'Error al iniciar sesión: ' + error.message;
         }
+    }
 
-        function loadVisits() {
-            const tbody = document.querySelector('#visitsTable tbody');
-            
-            db.collection('visits')
-                .orderBy('timestamp', 'desc')
-                .onSnapshot((snapshot) => {
-                    tbody.innerHTML = '';
-                    snapshot.forEach((doc) => {
-                        const data = doc.data();
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>${data.timestamp ? new Date(data.timestamp.toDate()).toLocaleString() : 'N/A'}</td>
-                            <td>${data.ip || 'N/A'}</td>
-                            <td>${data.country || 'N/A'}</td>
-                            <td>${data.city || 'N/A'}</td>
-                            <td>${data.latitude ? `${data.latitude}, ${data.longitude}` : 'N/A'}</td>
-                            <td>${data.userAgent || 'N/A'}</td>
-                        `;
-                        tbody.appendChild(row);
-                    });
-                });
+    async function updateLabel(docId, currentLabel) {
+        const newLabel = prompt('Ingrese la nueva etiqueta:', currentLabel || '');
+        if (newLabel !== null) {
+            await db.collection('visits').doc(docId).update({
+                label: newLabel
+            });
         }
+    }
 
-        // Verificar estado de autenticación
-        auth.onAuthStateChanged((user) => {
-            if (user) {
-                document.getElementById('loginForm').style.display = 'none';
-                document.getElementById('dashboard').style.display = 'block';
-                loadVisits();
-            } else {
-                document.getElementById('loginForm').style.display = 'block';
-                document.getElementById('dashboard').style.display = 'none';
-            }
+    function openInMaps(lat, lng) {
+        if (lat && lng) {
+            window.open(`https://www.google.com/maps?q=${lat},${lng}`, '_blank');
+        }
+    }
+
+    function updateStats(visits) {
+        document.getElementById('totalVisits').textContent = visits.length;
+        document.getElementById('vpnDetected').textContent = visits.filter(v => v.vpnDetected).length;
+        document.getElementById('completedLocation').textContent = visits.filter(v => v.status === 'complete').length;
+    }
+
+    function updateFilters(visits) {
+        const countryFilter = document.getElementById('countryFilter');
+        const countries = [...new Set(visits.map(v => v.country).filter(Boolean))];
+        
+        countryFilter.innerHTML = '<option value="">Todos</option>';
+        countries.sort().forEach(country => {
+            const option = document.createElement('option');
+            option.value = country;
+            option.textContent = country;
+            countryFilter.appendChild(option);
         });
+    }
+
+    function formatDate(timestamp) {
+        if (!timestamp) return 'N/A';
+        return new Date(timestamp.seconds * 1000).toLocaleString();
+    }
+
+    function loadVisits() {
+        const tbody = document.querySelector('#visitsTable tbody');
+        const countryFilter = document.getElementById('countryFilter').value;
+        const statusFilter = document.getElementById('statusFilter').value;
+        
+        db.collection('visits')
+            .orderBy('timestamp', 'desc')
+            .onSnapshot((snapshot) => {
+                const visits = [];
+                tbody.innerHTML = '';
+                
+                snapshot.forEach((doc) => {
+                    const data = doc.data();
+                    visits.push(data);
+
+                    if ((countryFilter && data.country !== countryFilter) || 
+                        (statusFilter && data.status !== statusFilter)) {
+                        return;
+                    }
+
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${data.label || ''}</td>
+                        <td>${formatDate(data.timestamp)}</td>
+                        <td>${data.initialIp || 'N/A'}</td>
+                        <td>${data.country || 'N/A'}</td>
+                        <td>${data.city || 'N/A'}</td>
+                        <td>
+                            <span class="status-badge status-${data.status}">
+                                ${data.status === 'complete' ? 'Completo' : 'Inicial'}
+                            </span>
+                        </td>
+                        <td>
+                            ${data.status === 'initial' ? 
+                                '<div class="coordinates-loading"></div>Esperando...' :
+                                `${data.preciseLatitude}, ${data.preciseLongitude}`
+                            }
+                        </td>
+                        <td>${data.vpnDetected ? 
+                            '<span class="vpn-warning">Detectado</span>' : 
+                            'No detectado'}
+                        </td>
+                        <td>${data.userAgent || 'N/A'}</td>
+                        <td class="action-buttons">
+                            ${data.preciseLatitude ? 
+                                `<button class="action-button map-button" 
+                                    onclick="openInMaps(${data.preciseLatitude}, ${data.preciseLongitude})">
+                                    Ver en Mapa
+                                </button>` : ''
+                            }
+                            <button class="action-button label-button" 
+                                onclick="updateLabel('${doc.id}', '${data.label || ''}')">
+                                Etiquetar
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+
+                updateStats(visits);
+                updateFilters(visits);
+            });
+    }
+
+    auth.onAuthStateChanged((user) => {
+        if (user) {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('dashboard').style.display = 'block';
+            loadVisits();
+        } else {
+            document.getElementById('loginForm').style.display = 'block';
+            document.getElementById('dashboard').style.display = 'none';
+        }
+    });
     </script>
 </body>
 </html>
